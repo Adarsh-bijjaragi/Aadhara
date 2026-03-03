@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Aadhara</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Dashboard specific CSS -->
+  <style>
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: calc(100vh - 70px);
+    }
+    
+    .sidebar {
+      background-color: var(--ui-dark);
+      padding: var(--spacing-lg);
+      border-right: 1px solid var(--ui-darker);
+    }
+    
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--ui-darker);
+    }
+    
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+    }
+    
+    .user-info h4 {
+      margin-bottom: 0;
+    }
+    
+    .user-info p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+    }
+    
+    .sidebar-menu-item {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .sidebar-menu-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-md);
+      color: var(--text-secondary);
+      transition: all var(--transition-normal);
+    }
+    
+    .sidebar-menu-link:hover {
+      background-color: rgba(61, 209, 189, 0.1);
+      color: var(--accent-teal);
+    }
+    
+    .sidebar-menu-link.active {
+      background-color: rgba(61, 209, 189, 0.1);
+      color: var(--accent-teal);
+      border-left: 3px solid var(--accent-teal);
+    }
+    
+    .dashboard-main {
+      padding: var(--spacing-xl);
+      overflow-y: auto;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .dashboard-title {
+      margin-bottom: 0;
+    }
+    
+    .notification-bell {
+      position: relative;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 18px;
+      height: 18px;
+      background-color: var(--accent-orange);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--primary-dark);
+    }
+    
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .stat-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      text-align: center;
+      transition: all var(--transition-normal);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-teal);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .dashboard-tabs {
+      display: flex;
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 1px solid var(--ui-darker);
+      overflow-x: auto;
+    }
+    
+    .dashboard-tab {
+      padding: var(--spacing-md) var(--spacing-lg);
+      white-space: nowrap;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: all var(--transition-normal);
+      border-bottom: 2px solid transparent;
+    }
+    
+    .dashboard-tab.active {
+      color: var(--accent-teal);
+      border-bottom-color: var(--accent-teal);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .request-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .request-info h4 {
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .request-info p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .request-status {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .status-pending {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: var(--warning);
+    }
+    
+    .status-approved {
+      background-color: rgba(76, 175, 80, 0.2);
+      color: var(--success);
+    }
+    
+    .status-completed {
+      background-color: rgba(33, 150, 243, 0.2);
+      color: var(--info);
+    }
+    
+    .donation-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .donation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .donation-header h4 {
+      margin-bottom: 0;
+    }
+    
+    .donation-amount {
+      font-weight: 700;
+      color: var(--accent-teal);
+    }
+    
+    .donation-details {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .volunteer-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .volunteer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .volunteer-header h4 {
+      margin-bottom: 0;
+    }
+    
+    .volunteer-hours {
+      font-weight: 700;
+      color: var(--accent-teal);
+    }
+    
+    .volunteer-details {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .vote-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .vote-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .vote-header h4 {
+      margin-bottom: 0;
+    }
+    
+    .vote-type {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+    
+    .vote-type.upvote {
+      color: var(--success);
+    }
+    
+    .vote-type.downvote {
+      color: var(--error);
+    }
+    
+    .vote-details {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 992px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-background"></div>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="Aadhara Logo">
+        <span class="logo-text">Aadhara</span>
+      </div>
+      
+      <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="#" class="nav-link">About</a>
+        <a href="#" class="nav-link">Services</a>
+        <a href="#" class="nav-link">Contact</a>
+        <a href="#" class="nav-link active">Dashboard</a>
+        
+        <div class="language-selector">
+          <select>
+            <option value="en">English</option>
+            <option value="hi">हिंदी (Hindi)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="mr">मराठी (Marathi)</option>
+          </select>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Dashboard -->
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-user">
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="user-info">
+          <h4>Rahul Sharma</h4>
+          <p>User</p>
+        </div>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-hands-helping"></i>
+            <span>My Requests</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-donate"></i>
+            <span>Donations</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-user-friends"></i>
+            <span>Volunteering</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-thumbs-up"></i>
+            <span>Voting History</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h2 class="dashboard-title">Dashboard</h2>
+        
+        <div class="notification-bell">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </div>
+      </div>
+      
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Help Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">₹2,500</div>
+          <div class="stat-label">Donations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Volunteer Hours</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">24</div>
+          <div class="stat-label">Votes</div>
+        </div>
+      </div>
+      
+      <div class="dashboard-tabs">
+        <div class="dashboard-tab active" data-tab="requests">Requests</div>
+        <div class="dashboard-tab" data-tab="donations">Donations</div>
+        <div class="dashboard-tab" data-tab="volunteering">Volunteering</div>
+        <div class="dashboard-tab" data-tab="voting">Voting History</div>
+      </div>
+      
+      <!-- Requests Tab -->
+      <div class="tab-content active" id="requests-tab">
+        <div class="request-card">
+          <div class="request-info">
+            <h4>Food Assistance</h4>
+            <p>Requested on: 15 Sep 2025</p>
+          </div>
+          <div class="request-status status-approved">Approved</div>
+        </div>
+        
+        <div class="request-card">
+          <div class="request-info">
+            <h4>Medical Supplies</h4>
+            <p>Requested on: 10 Sep 2025</p>
+          </div>
+          <div class="request-status status-completed">Completed</div>
+        </div>
+        
+        <div class="request-card">
+          <div class="request-info">
+            <h4>Educational Support</h4>
+            <p>Requested on: 5 Sep 2025</p>
+          </div>
+          <div class="request-status status-pending">Pending</div>
+        </div>
+        
+        <div class="request-card">
+          <div class="request-info">
+            <h4>Housing Assistance</h4>
+            <p>Requested on: 1 Sep 2025</p>
+          </div>
+          <div class="request-status status-approved">Approved</div>
+        </div>
+        
+        <div class="request-card">
+          <div class="request-info">
+            <h4>Job Training</h4>
+            <p>Requested on: 25 Aug 2025</p>
+          </div>
+          <div class="request-status status-pending">Pending</div>
+        </div>
+      </div>
+      
+      <!-- Donations Tab -->
+      <div class="tab-content" id="donations-tab">
+        <div class="donation-card">
+          <div class="donation-header">
+            <h4>Food Distribution Program</h4>
+            <div class="donation-amount">₹1,000</div>
+          </div>
+          <div class="donation-details">
+            <div>Date: 20 Sep 2025</div>
+            <div>Status: Completed</div>
+          </div>
+        </div>
+        
+        <div class="donation-card">
+          <div class="donation-header">
+            <h4>Medical Camp</h4>
+            <div class="donation-amount">₹500</div>
+          </div>
+          <div class="donation-details">
+            <div>Date: 15 Sep 2025</div>
+            <div>Status: Completed</div>
+          </div>
+        </div>
+        
+        <div class="donation-card">
+          <div class="donation-header">
+            <h4>Education Scholarship</h4>
+            <div class="donation-amount">₹1,000</div>
+          </div>
+          <div class="donation-details">
+            <div>Date: 10 Sep 2025</div>
+            <div>Status: Completed</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Volunteering Tab -->
+      <div class="tab-content" id="volunteering-tab">
+        <div class="volunteer-card">
+          <div class="volunteer-header">
+            <h4>Food Distribution</h4>
+            <div class="volunteer-hours">5 hours</div>
+          </div>
+          <div class="volunteer-details">
+            <div>Date: 22 Sep 2025</div>
+            <div>Location: Community Center</div>
+          </div>
+        </div>
+        
+        <div class="volunteer-card">
+          <div class="volunteer-header">
+            <h4>Teaching Assistant</h4>
+            <div class="volunteer-hours">4 hours</div>
+          </div>
+          <div class="volunteer-details">
+            <div>Date: 18 Sep 2025</div>
+            <div>Location: Public School</div>
+          </div>
+        </div>
+        
+        <div class="volunteer-card">
+          <div class="volunteer-header">
+            <h4>Medical Camp</h4>
+            <div class="volunteer-hours">3 hours</div>
+          </div>
+          <div class="volunteer-details">
+            <div>Date: 15 Sep 2025</div>
+            <div>Location: Health Center</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Voting History Tab -->
+      <div class="tab-content" id="voting-tab">
+        <div class="vote-card">
+          <div class="vote-header">
+            <h4>Food Distribution Center</h4>
+            <div class="vote-type upvote">
+              <i class="fas fa-thumbs-up"></i>
+              <span>Upvoted</span>
+            </div>
+          </div>
+          <div class="vote-details">
+            <p>Free meals available daily from 11 AM - 2 PM</p>
+            <p>Voted on: 23 Sep 2025</p>
+          </div>
+        </div>
+        
+        <div class="vote-card">
+          <div class="vote-header">
+            <h4>Medical Supplies Distribution</h4>
+            <div class="vote-type upvote">
+              <i class="fas fa-thumbs-up"></i>
+              <span>Upvoted</span>
+            </div>
+          </div>
+          <div class="vote-details">
+            <p>Free medical supplies available at Community Health Center</p>
+            <p>Voted on: 20 Sep 2025</p>
+          </div>
+        </div>
+        
+        <div class="vote-card">
+          <div class="vote-header">
+            <h4>Job Training Workshop</h4>
+            <div class="vote-type downvote">
+              <i class="fas fa-thumbs-down"></i>
+              <span>Downvoted</span>
+            </div>
+          </div>
+          <div class="vote-details">
+            <p>Workshop on resume building and interview skills</p>
+            <p>Voted on: 15 Sep 2025</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab Switching
+      const tabs = document.querySelectorAll('.dashboard-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const target = this.getAttribute('data-tab');
+          
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Hide all tab contents
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Show target tab content
+          document.getElementById(`${target}-tab`).classList.add('active');
+        });
+      });
+      
+      // Mobile Menu Toggle
+      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      
+      if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('show');
+          
+          // Change icon based on menu state
+          const icon = this.querySelector('i');
+          if (navLinks.classList.contains('show')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+          } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aadhara - A Universal Help Platform</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="src/css/main.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="src/assets/images/favicon.png">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-background"></div>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">
+        <img src="src/assets/images/logo.png" alt="Aadhara Logo">
+        <span class="logo-text">Aadhara</span>
+      </div>
+      
+      <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">About</a>
+        <a href="#" class="nav-link">Services</a>
+        <a href="#" class="nav-link">Contact</a>
+        <a href="#" class="btn btn-primary">Login / Sign Up</a>
+        
+        <div class="language-selector">
+          <select>
+            <option value="en">English</option>
+            <option value="hi">हिंदी (Hindi)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="mr">मराठी (Marathi)</option>
+          </select>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Hero Section with Search -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Universal Help Platform</h1>
+        <p class="hero-subtitle">Find resources, connect with helpers, and make a difference in your community</p>
+        
+        <div class="search-container">
+          <input type="text" class="search-bar" placeholder="What do you need help with?">
+          <i class="fas fa-search search-icon"></i>
+          <i class="fas fa-microphone mic-icon"></i>
+        </div>
+        
+        <div class="categories">
+          <button class="category-btn" data-category="food">
+            <span class="category-icon">🍲</span>
+            <span class="category-name">Food</span>
+          </button>
+          <button class="category-btn" data-category="health">
+            <span class="category-icon">🏥</span>
+            <span class="category-name">Health</span>
+          </button>
+          <button class="category-btn" data-category="education">
+            <span class="category-icon">🎓</span>
+            <span class="category-name">Education</span>
+          </button>
+          <button class="category-btn" data-category="work">
+            <span class="category-icon">💼</span>
+            <span class="category-name">Work</span>
+          </button>
+          <button class="category-btn" data-category="shelter">
+            <span class="category-icon">🏠</span>
+            <span class="category-name">Shelter</span>
+          </button>
+          <button class="category-btn" data-category="medicine">
+            <span class="category-icon">💊</span>
+            <span class="category-name">Medicine</span>
+          </button>
+          <button class="category-btn" data-category="books">
+            <span class="category-icon">📚</span>
+            <span class="category-name">Books</span>
+          </button>
+          <button class="category-btn" data-category="sponsorship">
+            <span class="category-icon">🤝</span>
+            <span class="category-name">Sponsorship</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Main Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="text-center mb-xl">Main Features</h2>
+      
+      <div class="grid grid-2">
+        <!-- AI Chatbot Panel -->
+        <div class="chatbot-panel">
+          <div class="chatbot-header">
+            <i class="fas fa-robot chatbot-icon"></i>
+            <h3 class="chatbot-title">AI Assistant</h3>
+          </div>
+          
+          <div class="chat-messages">
+            <!-- Messages will be added dynamically via JavaScript -->
+          </div>
+          
+          <div class="chat-input-container">
+            <input type="text" class="chat-input" placeholder="Ask me anything...">
+            <button class="btn btn-primary chat-send-btn">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Features Grid -->
+        <div class="grid grid-1">
+          <!-- Voting & Feedback System -->
+          <div class="feature-card">
+            <i class="fas fa-thumbs-up feature-icon"></i>
+            <h3 class="feature-title">Voting & Feedback</h3>
+            <p class="feature-description">Rate and review solutions to help others find the most effective resources. Your feedback improves our recommendations and helps the community.</p>
+            
+            <!-- Example Solution Card with Voting -->
+            <div class="solution-card mt-md" data-id="solution-1">
+              <h4>Food Distribution Center</h4>
+              <p>Free meals available daily from 11 AM - 2 PM</p>
+              <div class="vote-buttons mt-sm">
+                <button class="vote-btn" data-vote="up">
+                  <i class="fas fa-thumbs-up"></i>
+                  <span class="vote-count">24</span>
+                </button>
+                <button class="vote-btn" data-vote="down">
+                  <i class="fas fa-thumbs-down"></i>
+                  <span class="vote-count">3</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fund Tracking -->
+          <div class="feature-card mt-lg">
+            <i class="fas fa-chart-line feature-icon"></i>
+            <h3 class="feature-title">Fund Tracking & Transparency</h3>
+            <p class="feature-description">See exactly where donations go with our transparent tracking system. Monitor fund allocation, project progress, and impact metrics in real-time.</p>
+          </div>
+          
+          <!-- Location-based Help -->
+          <div class="feature-card mt-lg">
+            <i class="fas fa-map-marker-alt feature-icon"></i>
+            <h3 class="feature-title">Location-based Help Alerts</h3>
+            <p class="feature-description">Discover assistance near you with geo-targeted alerts. Connect with local volunteers, services, and resources in your immediate area.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Login/Signup Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center mb-xl">Join Aadhara</h2>
+      
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-target="login-form">Login</div>
+        <div class="auth-tab" data-target="signup-form">Sign Up</div>
+      </div>
+      
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="Enter your email">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" placeholder="Enter your password">
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </div>
+        
+        <div class="social-login">
+          <p class="social-login-title">Or login with</p>
+          
+          <div class="social-buttons">
+            <a href="#" class="social-button">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="social-button">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-button">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+      
+      <!-- Signup Form -->
+      <form id="signup-form" class="auth-form" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">User Type</label>
+          <select class="form-input">
+            <option value="user">Individual User</option>
+            <option value="ngo">NGO</option>
+            <option value="volunteer">Volunteer</option>
+            <option value="donor">Donor</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" placeholder="Enter your full name">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="Enter your email">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" placeholder="Create a password">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" placeholder="Confirm your password">
+        </div>
+        
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+        </div>
+        
+        <div class="social-login">
+          <p class="social-login-title">Or sign up with</p>
+          
+          <div class="social-buttons">
+            <a href="#" class="social-button">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="social-button">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-button">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+  
+  <!-- Dashboard Preview Section -->
+  <section class="section" style="background-color: var(--secondary-dark);">
+    <div class="container">
+      <h2 class="text-center mb-xl">Personalized Dashboards</h2>
+      
+      <div class="grid grid-2">
+        <!-- User Dashboard Preview -->
+        <div>
+          <h3>User Dashboard</h3>
+          <p class="mb-lg">Track your help requests, donations, volunteer hours, and voting history all in one place.</p>
+          
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <div class="stat-value">5</div>
+              <div class="stat-label">Help Requests</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">₹2,500</div>
+              <div class="stat-label">Donations</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Volunteer Hours</div>
+            </div>
+          </div>
+          
+          <div class="dashboard-tabs">
+            <div class="dashboard-tab active">Requests</div>
+            <div class="dashboard-tab">Donations</div>
+            <div class="dashboard-tab">Volunteering</div>
+            <div class="dashboard-tab">Voting History</div>
+          </div>
+          
+          <button class="btn btn-outline">View Demo</button>
+        </div>
+        
+        <!-- NGO Dashboard Preview -->
+        <div>
+          <h3>NGO Dashboard</h3>
+          <p class="mb-lg">Manage projects, track funds, connect with donors, and analyze community feedback.</p>
+          
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <div class="stat-value">8</div>
+              <div class="stat-label">Active Projects</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">₹1.2L</div>
+              <div class="stat-label">Funds Raised</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">45</div>
+              <div class="stat-label">Donors</div>
+            </div>
+          </div>
+          
+          <div class="dashboard-tabs">
+            <div class="dashboard-tab active">Projects</div>
+            <div class="dashboard-tab">Finances</div>
+            <div class="dashboard-tab">Donors</div>
+            <div class="dashboard-tab">Reports</div>
+          </div>
+          
+          <button class="btn btn-outline">View Demo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h4>Aadhara</h4>
+          <p>A universal help platform connecting those in need with resources, volunteers, and organizations.</p>
+          
+          <div class="social-icons">
+            <a href="#" class="social-icon">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li class="footer-link"><a href="#">Home</a></li>
+            <li class="footer-link"><a href="#">About Us</a></li>
+            <li class="footer-link"><a href="#">Services</a></li>
+            <li class="footer-link"><a href="#">Contact</a></li>
+            <li class="footer-link"><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li class="footer-link"><a href="#">Help Center</a></li>
+            <li class="footer-link"><a href="#">Blog</a></li>
+            <li class="footer-link"><a href="#">Volunteer</a></li>
+            <li class="footer-link"><a href="#">Donate</a></li>
+            <li class="footer-link"><a href="#">Partner With Us</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-column">
+          <h4>Contact Us</h4>
+          <ul class="footer-links">
+            <li class="footer-link"><i class="fas fa-map-marker-alt"></i> 123 Help Street, Bangalore</li>
+            <li class="footer-link"><i class="fas fa-phone"></i> +91 98765 43210</li>
+            <li class="footer-link"><i class="fas fa-envelope"></i> info@aadhara.org</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Aadhara. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="src/js/animated-background.js"></script>
+  <script src="src/js/main.js"></script>
+</body>
+</html>

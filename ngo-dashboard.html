@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGO Dashboard - Aadhara</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Dashboard specific CSS -->
+  <style>
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: calc(100vh - 70px);
+    }
+    
+    .sidebar {
+      background-color: var(--ui-dark);
+      padding: var(--spacing-lg);
+      border-right: 1px solid var(--ui-darker);
+    }
+    
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 1px solid var(--ui-darker);
+    }
+    
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--accent-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+    }
+    
+    .user-info h4 {
+      margin-bottom: 0;
+    }
+    
+    .user-info p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+    }
+    
+    .sidebar-menu-item {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .sidebar-menu-link {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-md);
+      color: var(--text-secondary);
+      transition: all var(--transition-normal);
+    }
+    
+    .sidebar-menu-link:hover {
+      background-color: rgba(242, 139, 80, 0.1);
+      color: var(--accent-orange);
+    }
+    
+    .sidebar-menu-link.active {
+      background-color: rgba(242, 139, 80, 0.1);
+      color: var(--accent-orange);
+      border-left: 3px solid var(--accent-orange);
+    }
+    
+    .dashboard-main {
+      padding: var(--spacing-xl);
+      overflow-y: auto;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .dashboard-title {
+      margin-bottom: 0;
+    }
+    
+    .notification-bell {
+      position: relative;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 18px;
+      height: 18px;
+      background-color: var(--accent-orange);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--primary-dark);
+    }
+    
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .stat-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      text-align: center;
+      transition: all var(--transition-normal);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-orange);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .dashboard-tabs {
+      display: flex;
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 1px solid var(--ui-darker);
+      overflow-x: auto;
+    }
+    
+    .dashboard-tab {
+      padding: var(--spacing-md) var(--spacing-lg);
+      white-space: nowrap;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: all var(--transition-normal);
+      border-bottom: 2px solid transparent;
+    }
+    
+    .dashboard-tab.active {
+      color: var(--accent-orange);
+      border-bottom-color: var(--accent-orange);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .chart-container {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .chart-header h3 {
+      margin-bottom: 0;
+    }
+    
+    .chart-filters {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+    
+    .chart-filter {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background-color: var(--ui-darker);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+    
+    .chart-filter.active {
+      background-color: var(--accent-orange);
+      color: var(--primary-dark);
+    }
+    
+    .project-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .project-header h4 {
+      margin-bottom: 0;
+    }
+    
+    .project-status {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .status-active {
+      background-color: rgba(76, 175, 80, 0.2);
+      color: var(--success);
+    }
+    
+    .status-planning {
+      background-color: rgba(33, 150, 243, 0.2);
+      color: var(--info);
+    }
+    
+    .status-completed {
+      background-color: rgba(158, 158, 158, 0.2);
+      color: var(--text-secondary);
+    }
+    
+    .project-progress {
+      margin: var(--spacing-md) 0;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background-color: var(--ui-darker);
+      border-radius: var(--border-radius-full);
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--accent-orange);
+    }
+    
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: var(--spacing-xs);
+    }
+    
+    .project-details {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .donor-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+    
+    .donor-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--ui-darker);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+    }
+    
+    .donor-info {
+      flex: 1;
+    }
+    
+    .donor-info h4 {
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .donor-info p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .donor-amount {
+      font-weight: 700;
+      color: var(--accent-orange);
+    }
+    
+    .finance-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .finance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .finance-header h4 {
+      margin-bottom: 0;
+    }
+    
+    .finance-amount {
+      font-weight: 700;
+    }
+    
+    .income {
+      color: var(--success);
+    }
+    
+    .expense {
+      color: var(--error);
+    }
+    
+    .finance-details {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .report-card {
+      background-color: var(--ui-dark);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+    
+    .report-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--border-radius-md);
+      background-color: var(--ui-darker);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--accent-orange);
+    }
+    
+    .report-info {
+      flex: 1;
+    }
+    
+    .report-info h4 {
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .report-info p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .report-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+    
+    .report-action {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background-color: var(--ui-darker);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+    
+    .report-action:hover {
+      background-color: var(--accent-orange);
+      color: var(--primary-dark);
+    }
+    
+    @media (max-width: 992px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-background"></div>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="Aadhara Logo">
+        <span class="logo-text">Aadhara</span>
+      </div>
+      
+      <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="#" class="nav-link">About</a>
+        <a href="#" class="nav-link">Services</a>
+        <a href="#" class="nav-link">Contact</a>
+        <a href="#" class="nav-link active">Dashboard</a>
+        
+        <div class="language-selector">
+          <select>
+            <option value="en">English</option>
+            <option value="hi">हिंदी (Hindi)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="mr">मराठी (Marathi)</option>
+          </select>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Dashboard -->
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-user">
+        <div class="user-avatar">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="user-info">
+          <h4>Helping Hands NGO</h4>
+          <p>Organization</p>
+        </div>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-project-diagram"></i>
+            <span>Projects</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Finances</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-user-friends"></i>
+            <span>Donors</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reports</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="#" class="sidebar-menu-link">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h2 class="dashboard-title">NGO Dashboard</h2>
+        
+        <div class="notification-bell">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">5</span>
+        </div>
+      </div>
+      
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Active Projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">₹1.2L</div>
+          <div class="stat-label">Funds Raised</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">45</div>
+          <div class="stat-label">Donors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">120</div>
+          <div class="stat-label">Beneficiaries</div>
+        </div>
+      </div>
+      
+      <div class="dashboard-tabs">
+        <div class="dashboard-tab active" data-tab="projects">Projects</div>
+        <div class="dashboard-tab" data-tab="finances">Finances</div>
+        <div class="dashboard-tab" data-tab="donors">Donors</div>
+        <div class="dashboard-tab" data-tab="reports">Reports</div>
+      </div>
+      
+      <!-- Projects Tab -->
+      <div class="tab-content active" id="projects-tab">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Project Overview</h3>
+            <div class="chart-filters">
+              <div class="chart-filter active">All</div>
+              <div class="chart-filter">Active</div>
+              <div class="chart-filter">Completed</div>
+            </div>
+          </div>
+          <canvas id="projectsChart" height="200"></canvas>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-header">
+            <h4>Food Distribution Program</h4>
+            <div class="project-status status-active">Active</div>
+          </div>
+          <p>Providing daily meals to 50+ families in underserved communities.</p>
+          <div class="project-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 75%"></div>
+            </div>
+            <div class="progress-stats">
+              <div>75% Complete</div>
+              <div>End Date: 15 Dec 2025</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div>Budget: ₹50,000</div>
+            <div>Spent: ₹37,500</div>
+            <div>Beneficiaries: 50</div>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-header">
+            <h4>Medical Camp</h4>
+            <div class="project-status status-planning">Planning</div>
+          </div>
+          <p>Free health checkups and medicine distribution in rural areas.</p>
+          <div class="project-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 30%"></div>
+            </div>
+            <div class="progress-stats">
+              <div>30% Complete</div>
+              <div>End Date: 20 Jan 2026</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div>Budget: ₹75,000</div>
+            <div>Spent: ₹22,500</div>
+            <div>Beneficiaries: 30</div>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-header">
+            <h4>Education Scholarship</h4>
+            <div class="project-status status-active">Active</div>
+          </div>
+          <p>Providing educational support to underprivileged students.</p>
+          <div class="project-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 60%"></div>
+            </div>
+            <div class="progress-stats">
+              <div>60% Complete</div>
+              <div>End Date: 31 Mar 2026</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div>Budget: ₹100,000</div>
+            <div>Spent: ₹60,000</div>
+            <div>Beneficiaries: 20</div>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-header">
+            <h4>Skill Development Workshop</h4>
+            <div class="project-status status-completed">Completed</div>
+          </div>
+          <p>Training youth in digital skills for better employment opportunities.</p>
+          <div class="project-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            <div class="progress-stats">
+              <div>100% Complete</div>
+              <div>End Date: 15 Aug 2025</div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div>Budget: ₹30,000</div>
+            <div>Spent: ₹28,500</div>
+            <div>Beneficiaries: 25</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Finances Tab -->
+      <div class="tab-content" id="finances-tab">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Financial Overview</h3>
+            <div class="chart-filters">
+              <div class="chart-filter active">Monthly</div>
+              <div class="chart-filter">Quarterly</div>
+              <div class="chart-filter">Yearly</div>
+            </div>
+          </div>
+          <canvas id="financesChart" height="200"></canvas>
+        </div>
+        
+        <div class="finance-card">
+          <div class="finance-header">
+            <h4>Donation - Corporate</h4>
+            <div class="finance-amount income">+₹50,000</div>
+          </div>
+          <div class="finance-details">
+            <div>Date: 20 Sep 2025</div>
+            <div>Source: TechCorp Ltd.</div>
+            <div>Category: Corporate Donation</div>
+          </div>
+        </div>
+        
+        <div class="finance-card">
+          <div class="finance-header">
+            <h4>Medical Supplies</h4>
+            <div class="finance-amount expense">-₹15,000</div>
+          </div>
+          <div class="finance-details">
+            <div>Date: 18 Sep 2025</div>
+            <div>Vendor: MediSupply Co.</div>
+            <div>Category: Project Expense</div>
+          </div>
+        </div>
+        
+        <div class="finance-card">
+          <div class="finance-header">
+            <h4>Donation - Individual</h4>
+            <div class="finance-amount income">+₹5,000</div>
+          </div>
+          <div class="finance-details">
+            <div>Date: 15 Sep 2025</div>
+            <div>Source: Rahul Sharma</div>
+            <div>Category: Individual Donation</div>
+          </div>
+        </div>
+        
+        <div class="finance-card">
+          <div class="finance-header">
+            <h4>Food Supplies</h4>
+            <div class="finance-amount expense">-₹12,500</div>
+          </div>
+          <div class="finance-details">
+            <div>Date: 12 Sep 2025</div>
+            <div>Vendor: FoodMart</div>
+            <div>Category: Project Expense</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Donors Tab -->
+      <div class="tab-content" id="donors-tab">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Donor Distribution</h3>
+            <div class="chart-filters">
+              <div class="chart-filter active">All</div>
+              <div class="chart-filter">Corporate</div>
+              <div class="chart-filter">Individual</div>
+            </div>
+          </div>
+          <canvas id="donorsChart" height="200"></canvas>
+        </div>
+        
+        <div class="donor-card">
+          <div class="donor-avatar">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="donor-info">
+            <h4>TechCorp Ltd.</h4>
+            <p>Corporate Donor</p>
+            <p>Email: contact@techcorp.com</p>
+          </div>
+          <div class="donor-amount">₹50,000</div>
+        </div>
+        
+        <div class="donor-card">
+          <div class="donor-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="donor-info">
+            <h4>Rahul Sharma</h4>
+            <p>Individual Donor</p>
+            <p>Email: rahul.s@example.com</p>
+          </div>
+          <div class="donor-amount">₹5,000</div>
+        </div>
+        
+        <div class="donor-card">
+          <div class="donor-avatar">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="donor-info">
+            <h4>Global Finance Inc.</h4>
+            <p>Corporate Donor</p>
+            <p>Email: info@globalfinance.com</p>
+          </div>
+          <div class="donor-amount">₹25,000</div>
+        </div>
+        
+        <div class="donor-card">
+          <div class="donor-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="donor-info">
+            <h4>Priya Patel</h4>
+            <p>Individual Donor</p>
+            <p>Email: priya.p@example.com</p>
+          </div>
+          <div class="donor-amount">₹10,000</div>
+        </div>
+      </div>
+      
+      <!-- Reports Tab -->
+      <div class="tab-content" id="reports-tab">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Impact Metrics</h3>
+            <div class="chart-filters">
+              <div class="chart-filter active">All Projects</div>
+              <div class="chart-filter">Food</div>
+              <div class="chart-filter">Health</div>
+              <div class="chart-filter">Education</div>
+            </div>
+          </div>
+          <canvas id="impactChart" height="200"></canvas>
+        </div>
+        
+        <div class="report-card">
+          <div class="report-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="report-info">
+            <h4>Monthly Progress Report</h4>
+            <p>September 2025</p>
+            <p>Generated on: 25 Sep 2025</p>
+          </div>
+          <div class="report-actions">
+            <div class="report-action">
+              <i class="fas fa-download"></i>
+              <span>Download</span>
+            </div>
+            <div class="report-action">
+              <i class="fas fa-share-alt"></i>
+              <span>Share</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="report-card">
+          <div class="report-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="report-info">
+            <h4>Financial Statement</h4>
+            <p>Q3 2025</p>
+            <p>Generated on: 20 Sep 2025</p>
+          </div>
+          <div class="report-actions">
+            <div class="report-action">
+              <i class="fas fa-download"></i>
+              <span>Download</span>
+            </div>
+            <div class="report-action">
+              <i class="fas fa-share-alt"></i>
+              <span>Share</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="report-card">
+          <div class="report-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="report-info">
+            <h4>Donor Recognition Report</h4>
+            <p>August 2025</p>
+            <p>Generated on: 15 Sep 2025</p>
+          </div>
+          <div class="report-actions">
+            <div class="report-action">
+              <i class="fas fa-download"></i>
+              <span>Download</span>
+            </div>
+            <div class="report-action">
+              <i class="fas fa-share-alt"></i>
+              <span>Share</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="report-card">
+          <div class="report-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="report-info">
+            <h4>Impact Assessment</h4>
+            <p>Food Distribution Program</p>
+            <p>Generated on: 10 Sep 2025</p>
+          </div>
+          <div class="report-actions">
+            <div class="report-action">
+              <i class="fas fa-download"></i>
+              <span>Download</span>
+            </div>
+            <div class="report-action">
+              <i class="fas fa-share-alt"></i>
+              <span>Share</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab Switching
+      const tabs = document.querySelectorAll('.dashboard-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const target = this.getAttribute('data-tab');
+          
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Hide all tab contents
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Show target tab content
+          document.getElementById(`${target}-tab`).classList.add('active');
+        });
+      });
+      
+      // Mobile Menu Toggle
+      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      
+      if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('show');
+          
+          // Change icon based on menu state
+          const icon = this.querySelector('i');
+          if (navLinks.classList.contains('show')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+          } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+          }
+        });
+      }
+      
+      // Chart Filters
+      const chartFilters = document.querySelectorAll('.chart-filter');
+      
+      chartFilters.forEach(filter => {
+        filter.addEventListener('click', function() {
+          // Remove active class from all filters in this group
+          const filterGroup = this.parentElement;
+          filterGroup.querySelectorAll('.chart-filter').forEach(f => {
+            f.classList.remove('active');
+          });
+          
+          // Add active class to clicked filter
+          this.classList.add('active');
+          
+          // In a real app, this would update the chart data
+          console.log('Filter changed to:', this.textContent);
+        });
+      });
+      
+      // Initialize Charts
+      initCharts();
+    });
+    
+    function initCharts() {
+      // Projects Chart
+      const projectsCtx = document.getElementById('projectsChart').getContext('2d');
+      const projectsChart = new Chart(projectsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Food', 'Health', 'Education', 'Shelter', 'Employment', 'Sanitation'],
+          datasets: [{
+            label: 'Active Projects',
+            data: [3, 2, 2, 1, 2, 1],
+            backgroundColor: 'rgba(242, 139, 80, 0.7)',
+            borderColor: 'rgba(242, 139, 80, 1)',
+            borderWidth: 1
+          }, {
+            label: 'Completed Projects',
+            data: [2, 1, 1, 2, 0, 1],
+            backgroundColor: 'rgba(61, 209, 189, 0.7)',
+            borderColor: 'rgba(61, 209, 189, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          }
+        }
+      });
+      
+      // Finances Chart
+      const financesCtx = document.getElementById('financesChart').getContext('2d');
+      const financesChart = new Chart(financesCtx, {
+        type: 'line',
+        data: {
+          labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+          datasets: [{
+            label: 'Income',
+            data: [30000, 45000, 35000, 60000, 75000, 85000],
+            backgroundColor: 'rgba(76, 175, 80, 0.2)',
+            borderColor: 'rgba(76, 175, 80, 1)',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }, {
+            label: 'Expenses',
+            data: [25000, 30000, 28000, 45000, 50000, 60000],
+            backgroundColor: 'rgba(244, 67, 54, 0.2)',
+            borderColor: 'rgba(244, 67, 54, 1)',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          }
+        }
+      });
+      
+      // Donors Chart
+      const donorsCtx = document.getElementById('donorsChart').getContext('2d');
+      const donorsChart = new Chart(donorsCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Corporate', 'Individual', 'Government', 'Foundation'],
+          datasets: [{
+            data: [45, 30, 15, 10],
+            backgroundColor: [
+              'rgba(242, 139, 80, 0.7)',
+              'rgba(61, 209, 189, 0.7)',
+              'rgba(33, 150, 243, 0.7)',
+              'rgba(156, 39, 176, 0.7)'
+            ],
+            borderColor: [
+              'rgba(242, 139, 80, 1)',
+              'rgba(61, 209, 189, 1)',
+              'rgba(33, 150, 243, 1)',
+              'rgba(156, 39, 176, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          }
+        }
+      });
+      
+      // Impact Chart
+      const impactCtx = document.getElementById('impactChart').getContext('2d');
+      const impactChart = new Chart(impactCtx, {
+        type: 'radar',
+        data: {
+          labels: ['Food Security', 'Healthcare', 'Education', 'Employment', 'Housing', 'Community'],
+          datasets: [{
+            label: 'Current Impact',
+            data: [80, 65, 75, 60, 50, 70],
+            backgroundColor: 'rgba(242, 139, 80, 0.2)',
+            borderColor: 'rgba(242, 139, 80, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(242, 139, 80, 1)'
+          }, {
+            label: 'Target Impact',
+            data: [90, 80, 85, 75, 70, 85],
+            backgroundColor: 'rgba(61, 209, 189, 0.2)',
+            borderColor: 'rgba(61, 209, 189, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(61, 209, 189, 1)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              angleLines: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              pointLabels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)',
+                backdropColor: 'transparent'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
